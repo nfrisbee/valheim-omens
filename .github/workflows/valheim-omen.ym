@@ -1,0 +1,31 @@
+# Save this file as .github/workflows/valheim-omen.yml in a GitHub repo.
+# It runs valheim_omen.py automatically every day.
+
+name: Valheim Daily Omen
+
+on:
+  schedule:
+    # Runs at 15:00 UTC every day — adjust to whatever time you like.
+    # (e.g. 15:00 UTC = 9:00 AM Mountain Time during MDT)
+    - cron: "0 15 * * *"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab too
+
+jobs:
+  post-omen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Post today's omen
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python valheim_omen.py
